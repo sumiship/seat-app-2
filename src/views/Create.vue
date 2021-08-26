@@ -145,7 +145,7 @@ export default class Create extends Vue {
     [...Array(1000000)].forEach(() => {
       let score = 0;
       this.array_shuffle(resource);
-      this.$store.state.groups.forEach((groupData) => {
+      this.$store.state.groups.forEach((groupData: any) => {
         if (score < best) return;
         score -= this.array_evaluation(groupData, resource);
       });

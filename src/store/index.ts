@@ -4,6 +4,12 @@ import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex);
 
+// interface Group {
+//   name: string;
+//   volume: number;
+//   member: number[];
+// }
+
 export default new Vuex.Store({
   plugins: [
     createPersistedState({
@@ -43,7 +49,7 @@ export default new Vuex.Store({
       "member23",
       "member24",
     ],
-    groups: [],
+    groups: [{ name: "sample", volume: 20, member: [0, 1, 2] }],
     people: [
       [1, 1],
       [1, 2],
