@@ -76,6 +76,9 @@ export default class EditGroup extends Vue {
 
   private toggle_modal(): void {
     this.modal = !this.modal;
+    this.groupName = "";
+    this.volume = "50";
+    this.selectedNames = [];
   }
 
   private select_name(index: number): void {
@@ -91,8 +94,9 @@ export default class EditGroup extends Vue {
     const saveData = {
       name: this.groupName,
       volume: Number(this.volume),
-      member: this.selectedNames,
+      member: JSON.parse(JSON.stringify(this.selectedNames)),
     };
+    this.toggle_modal();
     this.$store.commit("add_groups", { saveData });
   }
 
@@ -144,6 +148,7 @@ export default class EditGroup extends Vue {
   }
 }
 .group-add {
+  margin: 0 10px;
   &:hover {
     cursor: pointer;
     & .group-add__button {
