@@ -91,6 +91,10 @@ export default class EditGroup extends Vue {
   }
 
   private add_group(): void {
+    if (this.selectedNames.length == 0) {
+      alert("メンバーを選択してください");
+      return;
+    }
     const saveData = {
       name: this.groupName,
       volume: Number(this.volume),
@@ -152,7 +156,7 @@ export default class EditGroup extends Vue {
   &:hover {
     cursor: pointer;
     & .group-add__button {
-      box-shadow: 0 0 2px 2px rgb(104, 194, 164);
+      box-shadow: 0 0 4px 0px rgb(104, 194, 164);
     }
   }
   &__button {

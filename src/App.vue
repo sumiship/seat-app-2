@@ -28,6 +28,7 @@
 #nav {
   padding: 30px;
   display: flex;
+  margin-bottom: 20px;
 }
 
 #nav a {
@@ -39,14 +40,16 @@
   text-decoration: none;
   font-size: 1.4rem;
   border: #42b983 solid 1px;
+  transition: 0.7s;
 }
 
 #nav a:hover {
   background-color: #9bd4bb;
-  transition: 0.7s;
 }
 
 #nav a.router-link-exact-active {
   background-color: #42b983;
+  box-shadow: 0 0 10px 1px #42b983;
+  transform: 0.7s;
 }
 </style>
