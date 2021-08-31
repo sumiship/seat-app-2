@@ -86,7 +86,7 @@ export default class Create extends Vue {
 
   private deskClass(index: number): string {
     if (index % 2 == 1) return "background-color: white;";
-    return "background-color: rgb(211, 136, 51)";
+    return "background-color: #e0aa70; box-shadow:2px 2px 8px 1px #705c47; margin: 4px 0";
   }
 
   @Watch("checkGroup")
@@ -247,7 +247,7 @@ export default class Create extends Vue {
 .desk {
   width: 100%;
   padding-top: 4%;
-  // background-color: rgb(211, 136, 51);
+  background-color: #705c47;
 }
 .seat-col {
   width: 20%;
