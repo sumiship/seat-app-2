@@ -22,6 +22,14 @@
     </div>
     <div class="main">
       <div class="seat-box">
+        <div class="describe">
+          <div class="describe__data">
+            評価値：{{
+              Math.floor((10000 / (evaluationValue * -1)) * 100) / 100
+            }}
+          </div>
+          <div class="describe__map">入り口</div>
+        </div>
         <div
           class="seat-row"
           v-for="(seatRow, rowIndex) in people2seat(people)"
@@ -35,6 +43,7 @@
           >
             {{ $store.state.names[seatCol] }}
           </div>
+          <div class="desk" :style="deskClass(rowIndex)"></div>
         </div>
       </div>
       <div class="control">
@@ -58,6 +67,7 @@ export default class Create extends Vue {
   private people = this.$store.state.people;
   private isSearching = false;
   private checkGroup: number[] = [];
+  private evaluationValue = 0;
 
   private people2seat(people: number[][]): number[][] {
     let seat = [
@@ -72,6 +82,11 @@ export default class Create extends Vue {
       seat[person[0] - 1][person[1] - 1] = index;
     });
     return seat;
+  }
+
+  private deskClass(index: number): string {
+    if (index % 2 == 1) return "background-color: white;";
+    return "background-color: rgb(211, 136, 51)";
   }
 
   @Watch("checkGroup")
@@ -122,10 +137,10 @@ export default class Create extends Vue {
     let x: number[] = [];
     let y: number[] = [];
     arr.forEach((data) => {
-      x.push(data[0]);
-      y.push(data[1]);
+      x.push(data[1]); //横
+      y.push(data[0]); //たて
     });
-    return this.array_variance(x) + this.array_variance(y);
+    return this.array_variance(x) + this.array_variance(y) * 15;
   }
   private array_evaluation(groupData: GroupData, resource: number[][]): number {
     let seatList: number[][] = [];
@@ -139,10 +154,11 @@ export default class Create extends Vue {
   }
 
   private search(): void {
-    let best = -420000000000000;
+    let best = -420000000000000; //テキトウだよ！！！！
     let answer: number[][] = [[]];
     const resource = JSON.parse(JSON.stringify(this.people));
-    [...Array(1000000)].forEach(() => {
+    [...Array(2000000)].forEach(() => {
+      //ここで回数指定できるよ！！！！！
       let score = 0;
       this.array_shuffle(resource);
       this.$store.state.groups.forEach((groupData: any) => {
@@ -154,6 +170,7 @@ export default class Create extends Vue {
         answer = JSON.parse(JSON.stringify(resource));
       }
     });
+    this.evaluationValue = best;
     this.isSearching = false;
     this.people = JSON.parse(JSON.stringify(answer));
     this.$store.commit("update_people", this.people);
@@ -211,12 +228,30 @@ export default class Create extends Vue {
 .main {
   width: 73%;
 }
+.describe {
+  display: flex;
+  margin-bottom: 1%;
+  &__data {
+    width: 70%;
+  }
+  &__map {
+    font-size: 1.4rem;
+  }
+}
 .seat-row {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
   width: 100%;
 }
+.desk {
+  width: 100%;
+  padding-top: 2%;
+  // background-color: rgb(211, 136, 51);
+}
 .seat-col {
-  width: 25%;
+  width: 20%;
+
   font-size: 1.3rem;
   &.check {
     background-color: pink;
