@@ -246,7 +246,7 @@ export default class Create extends Vue {
 }
 .desk {
   width: 100%;
-  padding-top: 2%;
+  padding-top: 4%;
   // background-color: rgb(211, 136, 51);
 }
 .seat-col {
