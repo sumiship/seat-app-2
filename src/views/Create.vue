@@ -157,7 +157,7 @@ export default class Create extends Vue {
     let best = -420000000000000; //テキトウだよ！！！！
     let answer: number[][] = [[]];
     const resource = JSON.parse(JSON.stringify(this.people));
-    [...Array(2000000)].forEach(() => {
+    [...Array(4000000)].forEach(() => {
       //ここで回数指定できるよ！！！！！
       let score = 0;
       this.array_shuffle(resource);
