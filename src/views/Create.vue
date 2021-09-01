@@ -181,33 +181,39 @@ export default class Create extends Vue {
     let best = -420000000000000; //テキトウだよ！！！！
     const resource = JSON.parse(JSON.stringify(this.people));
     this.array_shuffle(resource);
-    [...Array(1000)].forEach(() => {
+    for (let ppp = 0; ppp < 30; ppp++) {
       //ここで回数指定できるよ！！！！！
       let shuffleList: number[][] = [];
+      let prebest = best;
       for (let i = 0; i < 23; i++) {
         for (let j = i + 1; j < 24; j++) {
           let score = 0;
           const testArr = JSON.parse(JSON.stringify(resource));
           [testArr[i], testArr[j]] = [testArr[j], testArr[i]];
           this.$store.state.groups.forEach((groupData: any) => {
-            if (score < best) return;
+            if (score < prebest) return;
             score -= this.array_evaluation(groupData, testArr);
           });
           if (score > best) {
             best = score;
             shuffleList = [[i, j]];
-          } else if (score == best) {
+          } else if (score == best && score != prebest) {
             shuffleList.push([i, j]);
           }
         }
       }
+      if (shuffleList.length == 0) {
+        console.log(ppp);
+        break;
+      }
+      console.log(shuffleList);
       const doShuffle =
         shuffleList[Math.floor(Math.random() * shuffleList.length)];
       [resource[doShuffle[0]], resource[doShuffle[1]]] = [
         resource[doShuffle[1]],
         resource[doShuffle[0]],
       ];
-    });
+    }
     this.evaluationValue = best;
     this.isSearching = false;
     this.people = JSON.parse(JSON.stringify(resource));
