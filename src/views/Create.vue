@@ -121,7 +121,7 @@ export default class Create extends Vue {
     this.isSearching = true;
     // this.loop_shuffle();
     // ここでsearch 処理中にアニメーションをしてみたかった
-    this.search();
+    this.search2();
   }
 
   private array_ave(arr: number[]): number {
@@ -173,6 +173,44 @@ export default class Create extends Vue {
     this.evaluationValue = best;
     this.isSearching = false;
     this.people = JSON.parse(JSON.stringify(answer));
+    this.$store.commit("update_people", this.people);
+  }
+
+  //search2関連のものはこちらに（この中から分散計算などを呼び出すことはある）
+  private async search2(): Promise<void> {
+    let best = -420000000000000; //テキトウだよ！！！！
+    const resource = JSON.parse(JSON.stringify(this.people));
+    this.array_shuffle(resource);
+    [...Array(1000)].forEach(() => {
+      //ここで回数指定できるよ！！！！！
+      let shuffleList: number[][] = [];
+      for (let i = 0; i < 23; i++) {
+        for (let j = i + 1; j < 24; j++) {
+          let score = 0;
+          const testArr = JSON.parse(JSON.stringify(resource));
+          [testArr[i], testArr[j]] = [testArr[j], testArr[i]];
+          this.$store.state.groups.forEach((groupData: any) => {
+            if (score < best) return;
+            score -= this.array_evaluation(groupData, testArr);
+          });
+          if (score > best) {
+            best = score;
+            shuffleList = [[i, j]];
+          } else if (score == best) {
+            shuffleList.push([i, j]);
+          }
+        }
+      }
+      const doShuffle =
+        shuffleList[Math.floor(Math.random() * shuffleList.length)];
+      [resource[doShuffle[0]], resource[doShuffle[1]]] = [
+        resource[doShuffle[1]],
+        resource[doShuffle[0]],
+      ];
+    });
+    this.evaluationValue = best;
+    this.isSearching = false;
+    this.people = JSON.parse(JSON.stringify(resource));
     this.$store.commit("update_people", this.people);
   }
 }
