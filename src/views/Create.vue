@@ -39,7 +39,7 @@
             class="seat-col"
             v-for="(seatCol, colIndex) in seatRow"
             :key="colIndex"
-            :class="check(seatCol)"
+            :style="check(seatCol)"
           >
             {{ $store.state.names[seatCol] }}
           </div>
@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue, } from "vue-property-decorator";
 
 interface GroupData {
   name: string;
@@ -84,15 +84,23 @@ export default class Create extends Vue {
     return seat;
   }
 
+  private colors = [
+    'rgb(240, 192, 200)','rgb(236, 206, 110)','rgb(139, 236, 110)','rgb(110, 236, 219)','rgb(149, 171, 241)','rgb(204, 149, 241)','rgb(241, 149, 149)','rgb(253, 167, 117)'
+  ];
+
   private deskClass(index: number): string {
     if (index % 2 == 1) return "background-color: white;";
     return "background-color: #e0aa70; box-shadow:2px 2px 8px 1px #705c47; margin: 4px 0";
   }
 
-  @Watch("checkGroup")
+  // @Watch("checkGroup")
   private check(id: number): string {
-    if (this.checkGroup.indexOf(id) != -1) return "check";
-    return "";
+    let style = '';
+    this.$store.state.groups.map((group:GroupData, i: number)=> {
+      if(group.member.indexOf(id) != -1) style = style + 'background-color: ' + this.colors[i] +'; ';
+    })
+    if (this.checkGroup.indexOf(id) != -1) return style + "outline: solid 6px red; outline-offset: -6px";
+    return style;
   }
 
   private highlight(member: number[]): void {
@@ -102,7 +110,8 @@ export default class Create extends Vue {
     this.checkGroup = [];
   }
 
-  private array_shuffle(arr: number[][]): void {
+
+  private array_shuffle(arr: number[][]|string[]): void {
     for (let i = arr.length; 1 < i; i--) {
       const key = Math.floor(Math.random() * i);
       [arr[key], arr[i - 1]] = [arr[i - 1], arr[key]];
@@ -119,6 +128,7 @@ export default class Create extends Vue {
 
   private action_control(): void {
     this.isSearching = true;
+    this.array_shuffle(this.colors);
     // this.loop_shuffle();
     // ここでsearch 処理中にアニメーションをしてみたかった
     this.search2();
@@ -157,7 +167,7 @@ export default class Create extends Vue {
     let best = -420000000000000; //テキトウだよ！！！！
     let answer: number[][] = [[]];
     const resource = JSON.parse(JSON.stringify(this.people));
-    [...Array(4000000)].forEach(() => {
+    [...Array(3000000)].forEach(() => {
       //ここで回数指定できるよ！！！！！
       let score = 0;
       this.array_shuffle(resource);
@@ -206,7 +216,7 @@ export default class Create extends Vue {
         console.log(ppp);
         break;
       }
-      console.log(shuffleList);
+      // console.log(shuffleList);
       const doShuffle =
         shuffleList[Math.floor(Math.random() * shuffleList.length)];
       [resource[doShuffle[0]], resource[doShuffle[1]]] = [
@@ -217,6 +227,7 @@ export default class Create extends Vue {
     this.evaluationValue = best;
     this.isSearching = false;
     this.people = JSON.parse(JSON.stringify(resource));
+    console.log(this.people)
     this.$store.commit("update_people", this.people);
   }
 }
@@ -298,7 +309,7 @@ export default class Create extends Vue {
 
   font-size: 1.3rem;
   &.check {
-    background-color: pink;
+    background-color: rgb(253, 167, 117);
   }
 }
 .control {
