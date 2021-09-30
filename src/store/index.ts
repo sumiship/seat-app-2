@@ -90,7 +90,17 @@ export default new Vuex.Store({
     update_people(state, payload) {
       state.people = payload;
     },
+    replace_groups(state, payload) {
+      state.groups.splice(payload[0], 1, payload[1]);
+    }
   },
-  actions: {},
+  actions: {
+    swap_groups(context, ids) {
+      console.log(ids);
+      const evacuation = this.state.groups[ids[0]];
+      context.commit('replace_groups', [ids[0], this.state.groups[ids[1]]]);
+      context.commit('replace_groups', [ids[1],evacuation]);
+    }
+  },
   modules: {},
 });

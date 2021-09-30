@@ -5,6 +5,7 @@
         class="group"
         v-for="(group, index) in $store.state.groups"
         :key="index"
+        @click.self="swap_group(index)"
       >
         <div class="group__title">{{ group.name }}</div>
         <div class="group__volume">重要度：{{ group.volume }}</div>
@@ -68,10 +69,23 @@ export default class EditGroup extends Vue {
   private groupName = "";
   private selectedNames: number[] = [];
   private modal = false;
+  private swapGroupId=-100;
 
   private class_select(index: number): string {
     if (this.selectedNames.indexOf(index) != -1) return "selected";
     return "noselected";
+  }
+
+  private swap_group(id:number):void{
+    if(this.swapGroupId<0){
+      this.swapGroupId=id;
+      console.log(id);
+      }else{
+        console.log(this.swapGroupId,id);
+        this.$store.dispatch('swap_groups',[this.swapGroupId,id]);
+        this.swapGroupId=-100;
+      }
+
   }
 
   private toggle_modal(): void {
