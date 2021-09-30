@@ -96,7 +96,6 @@ export default new Vuex.Store({
   },
   actions: {
     swap_groups(context, ids) {
-      console.log(ids);
       const evacuation = this.state.groups[ids[0]];
       context.commit('replace_groups', [ids[0], this.state.groups[ids[1]]]);
       context.commit('replace_groups', [ids[1],evacuation]);
