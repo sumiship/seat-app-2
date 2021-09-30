@@ -39,15 +39,16 @@
             class="seat-col"
             v-for="(seatCol, colIndex) in seatRow"
             :key="colIndex"
-            :style="check(seatCol)"
+            :style="check(seatCol, imgDownloading)"
           >
             {{ $store.state.names[seatCol] }}
           </div>
-          <div class="desk" :style="deskClass(rowIndex)"></div>
+          <div class="desk" :style="deskClass(rowIndex, imgDownloading)"></div>
         </div>
       </div>
       <div class="control">
         <div class="control__search" @click="action_control()">search</div>
+        <div @click="imgDownload()">Download</div>
         <div
           class="control__circle"
           :style="circle_style(circleWidth)"
@@ -60,6 +61,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import html2canvas from "html2canvas";
 
 interface GroupData {
   name: string;
@@ -75,6 +77,23 @@ export default class Create extends Vue {
   private evaluationValue = 0;
   private circleWidth = 0;
   private isCircle = false;
+  private imgDownloading = false;
+
+  private imgDownload(): void {
+    this.imgDownloading = true;
+    setTimeout(() => {
+      const target = document.getElementsByClassName(
+        "seat-box"
+      )[0] as HTMLElement;
+      html2canvas(target).then((canvas) => {
+        let downloadEle = document.createElement("a");
+        downloadEle.href = canvas.toDataURL("image/webp");
+        downloadEle.download = "canvas.webp";
+        downloadEle.click();
+        this.imgDownloading = false;
+      });
+    }, 10);
+  }
 
   private people2seat(people: number[][]): number[][] {
     let seat = [
@@ -129,14 +148,16 @@ export default class Create extends Vue {
     setTimeout(this.circle_loop, 13, this.circleWidth);
   }
 
-  private deskClass(index: number): string {
+  private deskClass(index: number, bool: boolean): string {
     if (index % 2 == 1) return "background-color: #E4EBF5;";
+    if (bool) return "background-color: #e0aa70; margin: 4px 0";
     return "background-color: #e0aa70; box-shadow:2px 2px 8px 1px #705c47; margin: 4px 0";
   }
 
   // @Watch("checkGroup")
-  private check(id: number): string {
+  private check(id: number, bool: boolean): string {
     let style = "";
+    if (!bool) style += "box-shadow: inset 0 0 3px 0 black;";
     this.$store.state.groups.map((group: GroupData, i: number) => {
       if (group.member.indexOf(id) != -1)
         style = style + "background-color: " + this.colors[i] + "; ";
@@ -353,7 +374,6 @@ export default class Create extends Vue {
 }
 .seat-col {
   width: 20%;
-  box-shadow: inset 0 0 3px 0 black;
   background-color: white;
   font-size: 1.7rem;
 }
