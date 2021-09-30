@@ -255,42 +255,51 @@ export default class Create extends Vue {
   private async search2(): Promise<void> {
     let best = -420000000000000; //テキトウだよ！！！！
     const resource = JSON.parse(JSON.stringify(this.people));
-    this.array_shuffle(resource);
-    for (let ppp = 0; ppp < 30; ppp++) {
-      //ここで回数指定できるよ！！！！！
-      let shuffleList: number[][] = [];
-      let prebest = best;
-      for (let i = 0; i < 23; i++) {
-        for (let j = i + 1; j < 24; j++) {
-          let score = 0;
-          const testArr = JSON.parse(JSON.stringify(resource));
-          [testArr[i], testArr[j]] = [testArr[j], testArr[i]];
-          this.$store.state.groups.forEach((groupData: GroupData) => {
-            if (score < prebest) return;
-            score -= this.array_evaluation(groupData, testArr);
-          });
-          if (score > best) {
-            best = score;
-            shuffleList = [[i, j]];
-          } else if (score == best && score != prebest) {
-            shuffleList.push([i, j]);
+    let perfectResource = [];
+    let perfectScore = best;
+    for (let numberOfTest = 0; numberOfTest < 10; numberOfTest++) {
+      this.array_shuffle(resource);
+      best = -420000000000000;
+      for (let ppp = 0; ppp < 30; ppp++) {
+        //ここで回数指定できるよ！！！！！
+        let shuffleList: number[][] = [];
+        let prebest = best;
+        for (let i = 0; i < 23; i++) {
+          for (let j = i + 1; j < 24; j++) {
+            let score = 0;
+            const testArr = JSON.parse(JSON.stringify(resource));
+            [testArr[i], testArr[j]] = [testArr[j], testArr[i]];
+            this.$store.state.groups.forEach((groupData: GroupData) => {
+              if (score < prebest) return;
+              score -= this.array_evaluation(groupData, testArr);
+            });
+            if (score > best) {
+              best = score;
+              shuffleList = [[i, j]];
+            } else if (score == best && score != prebest) {
+              shuffleList.push([i, j]);
+            }
           }
         }
+        if (shuffleList.length == 0) {
+          break;
+        }
+        // console.log(shuffleList);
+        const doShuffle =
+          shuffleList[Math.floor(Math.random() * shuffleList.length)];
+        [resource[doShuffle[0]], resource[doShuffle[1]]] = [
+          resource[doShuffle[1]],
+          resource[doShuffle[0]],
+        ];
       }
-      if (shuffleList.length == 0) {
-        break;
+      if (perfectScore < best) {
+        perfectScore = best;
+        perfectResource = JSON.parse(JSON.stringify(resource));
       }
-      // console.log(shuffleList);
-      const doShuffle =
-        shuffleList[Math.floor(Math.random() * shuffleList.length)];
-      [resource[doShuffle[0]], resource[doShuffle[1]]] = [
-        resource[doShuffle[1]],
-        resource[doShuffle[0]],
-      ];
     }
-    this.evaluationValue = best;
+    this.evaluationValue = perfectScore;
     this.isSearching = false;
-    this.people = JSON.parse(JSON.stringify(resource));
+    this.people = JSON.parse(JSON.stringify(perfectResource));
     this.$store.commit("update_people", this.people);
   }
 }
