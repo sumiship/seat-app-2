@@ -48,6 +48,7 @@
       </div>
       <div class="control">
         <div class="control__search" @click="action_control()">search</div>
+        <div class="control__circle" :style="circle_style(circleWidth)" v-if="isCircle"></div>
       </div>
     </div>
   </div>
@@ -68,6 +69,8 @@ export default class Create extends Vue {
   private isSearching = false;
   private checkGroup: number[] = [];
   private evaluationValue = 0;
+  private circleWidth = 0;
+  private isCircle = false;
 
   private people2seat(people: number[][]): number[][] {
     let seat = [
@@ -87,6 +90,10 @@ export default class Create extends Vue {
   private colors = [
     'rgb(240, 192, 200)','rgb(236, 206, 110)','rgb(139, 236, 110)','rgb(110, 236, 219)','rgb(149, 171, 241)','rgb(204, 149, 241)','rgb(241, 149, 149)','rgb(253, 167, 117)'
   ];
+
+  private circle_style(num:number):string{
+    return "width: "+num+"px; height: "+num+"px; border-color: rgb(5, 156, 25,"+(1-num/1500)+");";
+  }
 
   private deskClass(index: number): string {
     if (index % 2 == 1) return "background-color: white;";
@@ -110,6 +117,14 @@ export default class Create extends Vue {
     this.checkGroup = [];
   }
 
+  private circle_loop(num: number): void{
+    this.isCircle=true;
+    num+=30;
+    if(num>1500){this.isCircle=false;this.circleWidth=0; return;}
+    this.circleWidth = num;
+    setTimeout(this.circle_loop,16,this.circleWidth);
+  }
+
 
   private array_shuffle(arr: number[][]|string[]): void {
     for (let i = arr.length; 1 < i; i--) {
@@ -130,6 +145,7 @@ export default class Create extends Vue {
     this.isSearching = true;
     this.array_shuffle(this.colors);
     // this.loop_shuffle();
+    this.circle_loop(this.circleWidth);
     // ここでsearch 処理中にアニメーションをしてみたかった
     this.search2();
   }
@@ -213,7 +229,6 @@ export default class Create extends Vue {
         }
       }
       if (shuffleList.length == 0) {
-        console.log(ppp);
         break;
       }
       // console.log(shuffleList);
@@ -227,7 +242,6 @@ export default class Create extends Vue {
     this.evaluationValue = best;
     this.isSearching = false;
     this.people = JSON.parse(JSON.stringify(resource));
-    console.log(this.people)
     this.$store.commit("update_people", this.people);
   }
 }
@@ -313,6 +327,7 @@ export default class Create extends Vue {
   }
 }
 .control {
+  position: relative;
   &__search {
     background-color: rgba(238, 74, 9, 0.445);
     display: inline-block;
@@ -323,6 +338,16 @@ export default class Create extends Vue {
       background-color: rgba(238, 74, 9, 0.692);
       cursor: pointer;
     }
+  }
+  &__circle{
+    position:absolute;
+    width:500px;
+    height:500px;
+    top: 50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    border: 50px solid rgb(5, 156, 25);
+    border-radius: 100%;
   }
 }
 </style>
