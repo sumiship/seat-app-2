@@ -1,20 +1,11 @@
 <template>
   <div class="create">
     <div class="groups">
-      <div
-        class="group"
-        v-for="(group, index) in $store.state.groups"
-        :key="index"
-        @mouseover="highlight(group.member)"
-        @mouseleave="unhighlight()"
-      >
+      <div class="group" v-for="(group, index) in $store.state.groups" :key="index" @mouseover="highlight(group.member)" @mouseleave="unhighlight()">
         <div class="group__title">{{ group.name }}</div>
         <div class="group__volume">重要度：{{ group.volume }}</div>
         <div class="group__members">
-          <span
-            v-for="(member, member_index) in group.member"
-            :key="member_index"
-          >
+          <span v-for="(member, member_index) in group.member" :key="member_index">
             {{ $store.state.names[member] }}
           </span>
         </div>
@@ -23,24 +14,11 @@
     <div class="main">
       <div class="seat-box">
         <div class="describe">
-          <div class="describe__data">
-            評価値：{{
-              Math.floor((10000 / (evaluationValue * -1)) * 100) / 100
-            }}
-          </div>
+          <div class="describe__data">評価値：{{ Math.floor((10000 / (evaluationValue * -1)) * 100) / 100 }}</div>
           <div class="describe__map">入り口</div>
         </div>
-        <div
-          class="seat-row"
-          v-for="(seatRow, rowIndex) in people2seat(people)"
-          :key="rowIndex"
-        >
-          <div
-            class="seat-col"
-            v-for="(seatCol, colIndex) in seatRow"
-            :key="colIndex"
-            :style="check(seatCol, imgDownloading)"
-          >
+        <div class="seat-row" v-for="(seatRow, rowIndex) in people2seat(people)" :key="rowIndex">
+          <div class="seat-col" v-for="(seatCol, colIndex) in seatRow" :key="colIndex" :style="check(seatCol, imgDownloading)">
             {{ $store.state.names[seatCol] }}
           </div>
           <div class="desk" :style="deskClass(rowIndex, imgDownloading)"></div>
@@ -49,11 +27,7 @@
       <div class="control">
         <div class="control__search" @click="action_control()">search</div>
         <div @click="imgDownload()">Download</div>
-        <div
-          class="control__circle"
-          :style="circle_style(circleWidth)"
-          v-if="isCircle"
-        ></div>
+        <div class="control__circle" :style="circle_style(circleWidth)" v-if="isCircle"></div>
       </div>
     </div>
   </div>
@@ -71,31 +45,29 @@ interface GroupData {
 
 @Component({})
 export default class Create extends Vue {
-  private people = this.$store.state.people;
-  private isSearching = false;
-  private checkGroup: number[] = [];
-  private evaluationValue = 0;
-  private circleWidth = 0;
-  private isCircle = false;
-  private imgDownloading = false;
+  people = this.$store.state.people;
+  isSearching = false;
+  checkGroup: number[] = [];
+  evaluationValue = 0;
+  circleWidth = 0;
+  isCircle = false;
+  imgDownloading = false;
 
-  private imgDownload(): void {
+  imgDownload(): void {
     this.imgDownloading = true;
     setTimeout(() => {
-      const target = document.getElementsByClassName(
-        "seat-box"
-      )[0] as HTMLElement;
+      const target = document.getElementsByClassName("seat-box")[0] as HTMLElement;
       html2canvas(target).then((canvas) => {
         let downloadEle = document.createElement("a");
-        downloadEle.href = canvas.toDataURL("image/webp");
-        downloadEle.download = "canvas.webp";
+        downloadEle.href = canvas.toDataURL("image/jpg");
+        downloadEle.download = "canvas.jpg";
         downloadEle.click();
         this.imgDownloading = false;
       });
     }, 10);
   }
 
-  private people2seat(people: number[][]): number[][] {
+  people2seat(people: number[][]): number[][] {
     let seat = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -110,33 +82,14 @@ export default class Create extends Vue {
     return seat;
   }
 
-  private colors = [
-    "rgb(240, 192, 200)",
-    "rgb(236, 206, 110)",
-    "rgb(139, 236, 110)",
-    "rgb(110, 236, 219)",
-    "rgb(149, 171, 241)",
-    "rgb(204, 149, 241)",
-    "rgb(241, 149, 149)",
-    "rgb(253, 167, 117)",
-  ];
+  colors = ["rgb(240, 192, 200)", "rgb(236, 206, 110)", "rgb(139, 236, 110)", "rgb(110, 236, 219)", "rgb(149, 171, 241)", "rgb(204, 149, 241)", "rgb(241, 149, 149)", "rgb(253, 167, 117)"];
 
-  private circle_style(num: number): string {
+  circle_style(num: number): string {
     const now = 1 - num / document.body.offsetWidth / 1.5;
-    return (
-      "width: " +
-      num +
-      "px; height: " +
-      num +
-      "px; border-color: rgb(5, 156, 25," +
-      now +
-      "); border-width: " +
-      (1 - now) * 150 +
-      "px;"
-    );
+    return "width: " + num + "px; height: " + num + "px; border-color: rgb(5, 156, 25," + now + "); border-width: " + (1 - now) * 150 + "px;";
   }
 
-  private circle_loop(num: number): void {
+  circle_loop(num: number): void {
     this.isCircle = true;
     num += 30;
     if (num > document.body.offsetWidth * 1.5) {
@@ -148,33 +101,31 @@ export default class Create extends Vue {
     setTimeout(this.circle_loop, 13, this.circleWidth);
   }
 
-  private deskClass(index: number, bool: boolean): string {
+  deskClass(index: number, bool: boolean): string {
     if (index % 2 == 1) return "background-color: #E4EBF5;";
     if (bool) return "background-color: #e0aa70; margin: 4px 0";
     return "background-color: #e0aa70; box-shadow:2px 2px 8px 1px #705c47; margin: 4px 0";
   }
 
   // @Watch("checkGroup")
-  private check(id: number, bool: boolean): string {
+  check(id: number, bool: boolean): string {
     let style = "";
     if (!bool) style += "box-shadow: inset 0 0 3px 0 black;";
     this.$store.state.groups.map((group: GroupData, i: number) => {
-      if (group.member.indexOf(id) != -1)
-        style = style + "background-color: " + this.colors[i] + "; ";
+      if (group.member.indexOf(id) != -1) style = style + "background-color: " + this.colors[i] + "; ";
     });
-    if (this.checkGroup.indexOf(id) != -1)
-      return style + "outline: solid 6px red; outline-offset: -6px";
+    if (this.checkGroup.indexOf(id) != -1) return style + "outline: solid 6px red; outline-offset: -6px";
     return style;
   }
 
-  private highlight(member: number[]): void {
+  highlight(member: number[]): void {
     this.checkGroup = member;
   }
-  private unhighlight(): void {
+  unhighlight(): void {
     this.checkGroup = [];
   }
 
-  private array_shuffle(arr: number[][] | string[]): void {
+  array_shuffle(arr: number[][] | string[]): void {
     for (let i = arr.length; 1 < i; i--) {
       const key = Math.floor(Math.random() * i);
       [arr[key], arr[i - 1]] = [arr[i - 1], arr[key]];
@@ -189,7 +140,7 @@ export default class Create extends Vue {
   //   setTimeout(this.loop_shuffle, 300);
   // }
 
-  private action_control(): void {
+  action_control(): void {
     this.isSearching = true;
     console.log(document.body.offsetWidth);
     this.array_shuffle(this.colors);
@@ -199,16 +150,13 @@ export default class Create extends Vue {
     this.search2();
   }
 
-  private array_ave(arr: number[]): number {
+  array_ave(arr: number[]): number {
     return arr.reduce((previous, current) => previous + current) / arr.length;
   }
-  private array_variance(arr: number[]): number {
-    return (
-      this.array_ave(arr.map((current) => current ** 2)) -
-      this.array_ave(arr) ** 2
-    );
+  array_variance(arr: number[]): number {
+    return this.array_ave(arr.map((current) => current ** 2)) - this.array_ave(arr) ** 2;
   }
-  private array_varianceVec2(arr: number[][]): number {
+  array_varianceVec2(arr: number[][]): number {
     let x: number[] = [];
     let y: number[] = [];
     arr.forEach((data) => {
@@ -217,18 +165,15 @@ export default class Create extends Vue {
     });
     return this.array_variance(x) + this.array_variance(y) * 15;
   }
-  private array_evaluation(groupData: GroupData, resource: number[][]): number {
+  array_evaluation(groupData: GroupData, resource: number[][]): number {
     let seatList: number[][] = [];
     groupData.member.forEach((data) => {
       seatList.push(resource[data]);
     });
-    return (
-      (Math.floor(this.array_varianceVec2(seatList) * 100000) / 100000) *
-      groupData.volume
-    );
+    return (Math.floor(this.array_varianceVec2(seatList) * 100000) / 100000) * groupData.volume;
   }
 
-  private search(): void {
+  search(): void {
     let best = -420000000000000; //テキトウだよ！！！！
     let answer: number[][] = [[]];
     const resource = JSON.parse(JSON.stringify(this.people));
@@ -252,7 +197,7 @@ export default class Create extends Vue {
   }
 
   //search2関連のものはこちらに（この中から分散計算などを呼び出すことはある）
-  private async search2(): Promise<void> {
+  async search2(): Promise<void> {
     let best = -420000000000000; //テキトウだよ！！！！
     const resource = JSON.parse(JSON.stringify(this.people));
     let perfectResource = [];
@@ -285,12 +230,8 @@ export default class Create extends Vue {
           break;
         }
         // console.log(shuffleList);
-        const doShuffle =
-          shuffleList[Math.floor(Math.random() * shuffleList.length)];
-        [resource[doShuffle[0]], resource[doShuffle[1]]] = [
-          resource[doShuffle[1]],
-          resource[doShuffle[0]],
-        ];
+        const doShuffle = shuffleList[Math.floor(Math.random() * shuffleList.length)];
+        [resource[doShuffle[0]], resource[doShuffle[1]]] = [resource[doShuffle[1]], resource[doShuffle[0]]];
       }
       if (perfectScore < best) {
         perfectScore = best;
